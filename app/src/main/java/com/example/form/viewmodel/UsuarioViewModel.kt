@@ -1,13 +1,17 @@
 package com.example.form.viewmodel
 
 import androidx.lifecycle.ViewModel
-import com.example.form.model.UsuarioErrores
-import com.example.form.model.UsuarioUIState
+import androidx.lifecycle.viewModelScope
+import com.example.form.model.Usuario
+import com.example.form.repository.UsuarioRepository
+import com.example.form.viewmodel.UsuarioErrores
+import com.example.form.viewmodel.UsuarioUIState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
-class UsuarioViewModel : ViewModel() {
+class UsuarioViewModel(private val repository: UsuarioRepository) : ViewModel() {
 
     private val _estado = MutableStateFlow(UsuarioUIState())
 
@@ -53,6 +57,22 @@ class UsuarioViewModel : ViewModel() {
 
         return !hayErrores
 
+    }
+
+    fun guardarUsuario() {
+        val estadoActual = _estado.value
+        if (validarFormulario()) {
+            viewModelScope.launch {
+                val nuevoUsuario = Usuario(
+                    nombre = estadoActual.nombre,
+                    correo = estadoActual.correo,
+                    clave = estadoActual.clave,
+                    direccion = estadoActual.direccion,
+                    aceptaTerminos = estadoActual.aceptaTerminos
+                )
+                repository.insertar(nuevoUsuario)
+            }
+        }
     }
 
 

@@ -104,6 +104,7 @@ fun FormularioScreen(
         Button(
             onClick = {
                 if (viewModel.validarFormulario()) {
+                    viewModel.guardarUsuario()
                     navController.navigate("resumen")
                 }
             },
